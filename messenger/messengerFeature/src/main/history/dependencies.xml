@@ -11,9 +11,9 @@
         <bundle>mvn:com.fasterxml/classmate/1.5.1</bundle>
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
         <bundle>mvn:com.messenger/authentication/1.0-SNAPSHOT</bundle>
-        <bundle>mvn:com.messenger/connectDatabase/1.0-SNAPSHOT</bundle>
-        <bundle>mvn:com.messenger/exception/1.0-SNAPSHOT</bundle>
-        <bundle>mvn:com.messenger/validation/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.messenger/databaseConnection/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.messenger/messengerConversation/1.0-SNAPSHOT</bundle>
+        <bundle>mvn:com.messenger/objectRelationalMapping/1.0-SNAPSHOT</bundle>
         <bundle>mvn:jakarta.activation/jakarta.activation-api/1.2.1</bundle>
         <bundle>mvn:jakarta.el/jakarta.el-api/4.0.0</bundle>
         <bundle>mvn:jakarta.validation/jakarta.validation-api/3.0.0</bundle>
@@ -33,8 +33,9 @@
         <bundle>mvn:org.hibernate.validator/hibernate-validator/7.0.4.Final</bundle>
         <bundle>mvn:org.javassist/javassist/3.20.0-GA</bundle>
         <bundle>mvn:org.jboss.logging/jboss-logging/3.4.1.Final</bundle>
-        <bundle>mvn:org.osgi/osgi.core/8.0.0</bundle>
         <bundle>mvn:org.postgresql/postgresql/42.3.6</bundle>
+        <bundle>wrap:mvn:com.messenger/exception/1.0-SNAPSHOT</bundle>
+        <bundle>wrap:mvn:com.messenger/validation/1.0-SNAPSHOT</bundle>
         <bundle>wrap:mvn:junit/junit/4.10</bundle>
         <bundle>wrap:mvn:org.hamcrest/hamcrest-core/1.1</bundle>
     </feature>

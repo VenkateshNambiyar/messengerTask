@@ -1,79 +1,93 @@
 package com.messenger.conversation.controller;
 
-import com.messenger.conversation.model.Conversation;
-import com.messenger.conversation.service.conversationServiceImplementation.ContactServiceImplementation;
-import com.messenger.conversation.service.conversationServiceImplementation.MessageServiceImplementation;
+import com.messenger.conversation.model.ConversationDetail;
+import com.messenger.conversation.service.conversationServiceImpl.ContactServiceImpl;
+import com.messenger.conversation.service.conversationServiceImpl.MessageServiceImpl;
 
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
- * Provides a services for Messenger
+ * Controls the data flow into the model object and updates the view whenever data changes
  *
  * @author Venkatesh N
  * @version 1.0
  */
 public class ConversationController {
 
-    private static final ContactServiceImplementation CONTACT_SERVICE = new ContactServiceImplementation();
-    private static final MessageServiceImplementation MESSAGE_SERVICE = new MessageServiceImplementation();
+    private static final ContactServiceImpl CONTACT_SERVICE = new ContactServiceImpl();
+    private static final MessageServiceImpl MESSAGE_SERVICE = new MessageServiceImpl();
 
     /**
-     * Find a particular user contact record.
+     * Obtain a specific user contact record
      *
-     * @param username name of the user.
-     * @return Contact of the Model
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param contactId represent a ConversionDetail model object
+     * @return information about the specified user's userName and userId
      */
-    public List<Object> getUserContact(final String username) {
-        return CONTACT_SERVICE.getUserContact(username);
+    public Collection<Map<String, Object>> getUserContact(final String primaryKey, final String tableName,
+                                                          final long contactId) {
+        return CONTACT_SERVICE.getUserContact(primaryKey, tableName, contactId);
     }
 
     /**
-     * Creates a new contact.
+     * Insert a new user contact
      *
-     * @param conversation object of the Messenger.
-     * @return Success or failure message
+     * @param tableName  represent database table's name
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    public boolean addNewContact(final Conversation conversation) {
-        return CONTACT_SERVICE.addNewContact(conversation);
+    public Boolean addNewContact(final String tableName, final Map<String, Object> conversationDetail) {
+        return CONTACT_SERVICE.addNewContact(tableName, conversationDetail);
     }
 
     /**
-     * Updates an existing mobileNumber for a user.
+     * Changes a user's current mobileNumber
      *
-     * @param conversation object of the messenger.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    public boolean updateMobileNumber(final Conversation conversation) {
-        return CONTACT_SERVICE.updateMobileNumber(conversation);
+    public Boolean updateMobileNumber(final String primaryKey, final String tableName,
+                                      final ConversationDetail conversationDetail) {
+        return CONTACT_SERVICE.updateMobileNumber(primaryKey, tableName, conversationDetail);
     }
 
     /**
-     * Deletes a particular user contact records.
+     * Removes a specific user profile
      *
-     * @param contactId userid of the messenger user.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param contactId  represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    public boolean deleteUserContact(final long contactId) {
-        return CONTACT_SERVICE.deleteUserContact(contactId);
+    public Boolean deleteUserContact(final String primaryKey, final String tableName, final long contactId) {
+        return CONTACT_SERVICE.deleteUserContact(primaryKey, tableName, contactId);
     }
 
     /**
-     * Creates a new message record.
+     * Insert a new user message
      *
-     * @param conversation object of the Messenger.
-     * @return Success or failure message
+     * @param tableName  represent database table's name
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    public boolean addMessage(final Conversation conversation) {
-        return MESSAGE_SERVICE.addMessage(conversation);
+    public Boolean addMessage(final String tableName, final Map<String, Object> conversationDetail) {
+        return MESSAGE_SERVICE.addMessage(tableName, conversationDetail);
     }
 
     /**
-     * Find a particular user message record.
+     * Obtain a specific user message record
      *
-     * @param username name of the user.
-     * @return Contact of the Model
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param contactId represent a ConversionDetail model object
+     * @return information about the specified user's userName and userId
      */
-    public List<Object> getMessage(final String username) {
-        return MESSAGE_SERVICE.getMessage(username);
+    public Collection<Map<String, Object>> getMessage(final String primaryKey, final String tableName,
+                                                      final long contactId) {
+        return MESSAGE_SERVICE.getMessage(primaryKey, tableName, contactId);
     }
 }

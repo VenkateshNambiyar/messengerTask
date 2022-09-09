@@ -1,7 +1,7 @@
 package com.messenger.exception;
 
 /**
- * CustomException is an UserDefinedException and its extends a RuntimeException
+ * Create a customException and its extends a RuntimeException
  *
  * @author Venkatesh N
  * @version 1.0

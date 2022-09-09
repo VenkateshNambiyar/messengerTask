@@ -1,184 +1,88 @@
 package com.messenger.conversation.dao;
 
-import com.messenger.connectDatabase.ConnectDataBase;
-import com.messenger.conversation.model.Conversation;
-import com.messenger.exception.UserNotFoundException;
-import com.messenger.exception.UsernameAlreadyExistsException;
+import com.messenger.conversation.model.ConversationDetail;
+import com.messenger.conversation.model.UserContactTable;
+import com.messenger.orm.ORMImpl;
 
-import java.sql.*;
 import java.util.*;
 
 /**
- * Provide database connection to perform create, read, update, delete operation
+ * Create, read, update, and delete operations should be performed via a database connection
  *
  * @author Venkatesh N
  * @version 1.0
  */
 public class ContactDAO {
 
-    private static final Connection CONNECTION = ConnectDataBase.getInstance().getConnection();
+    private static final ORMImpl ORM_IMPL = new ORMImpl();
 
     /**
-     * Creates a new contact
+     * Insert a new user contact
      *
-     * @param conversation object of the Conversion model
-     * @return Success or failure message
+     * @param tableName  represent database table's name
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    public boolean addContact(final Conversation conversation) {
-        final String insertSql = "insert into contact (mobile_number, person_name) values(?, ?)";
-
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(insertSql)) {
-            preparedStatement.setLong(1, conversation.getMobileNumber());
-            preparedStatement.setString(2, conversation.getPersonName());
-            preparedStatement.executeUpdate();
-
-            return createContact(conversation);
-        } catch (Exception exception) {
-            throw new UsernameAlreadyExistsException("username already Exists");
-        }
+    public boolean addContact(final String tableName, final Map<String, Object> conversationDetail) {
+        return ORM_IMPL.insert(tableName, conversationDetail);
     }
 
     /**
-     * Retrieve a user contact details
+     * Obtain a specific user contact record
      *
-     * @param conversation object of the Conversion model
-     * @return retrieveContactId of the user
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param contactId represent a ConversionDetail model object
+     * @return information about the specified user's userName and userId
      */
-    public long retrieveContactId(final Conversation conversation) {
-        long retrieveContactId = 0;
-        final String selectSql = "select org_id from contact where mobile_number = ?";
+    public Collection<Map <String,Object>> getUserContact(final String primaryKey, final String tableName,
+                                                         final long contactId) {
+        final String[] fieldName = new String[2];
 
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(selectSql)) {
-            preparedStatement.setLong(1, conversation.getMobileNumber());
-            final ResultSet resultSet = preparedStatement.executeQuery();
+        for (final String column : UserContactTable.columnField.field) {
 
-            while (resultSet.next()) {
-                retrieveContactId = resultSet.getLong("org_id");
+            if (column.equals("mobile_number")) {
+                fieldName[0] = column;
+                fieldName[1] = primaryKey;
             }
-        } catch (Exception exception) {
-            throw new UserNotFoundException("User Not Found");
         }
-        return retrieveContactId;
+        return ORM_IMPL.getParticularUserDetails(primaryKey, tableName, fieldName, contactId);
     }
 
     /**
-     * Retrieve a user profile details
+     * Changes a user's current mobileNumber
      *
-     * @param conversation object of the Conversion model
-     * @return retrieveProfileId of the user
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    public long retrieveUserId(final Conversation conversation) {
-        long retrieveUserId = 0;
-        final String selectSql = " Select org_id from user_login where user_name = ?";
+    public boolean updateMobileNumber(final String primaryKey, final String tableName,
+                                      final ConversationDetail conversationDetail) {
+        final List<Object> fieldValues = new ArrayList<>();
+        final List<Object> primaryKeyValue = new ArrayList<>();
+        final String[] columnList = new String[2];
 
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(selectSql)) {
-            preparedStatement.setObject(1, conversation.getProfileName());
-            final ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                retrieveUserId = resultSet.getLong("org_id");
+        for (final String column : UserContactTable.columnField.field) {
+            if (column.equals("mobile_number")) {
+                columnList[0] = column;
             }
-        } catch (Exception exception) {
-            throw new UserNotFoundException("User Not Found");
         }
-        return retrieveUserId;
+        fieldValues.add(conversationDetail.getMobileNumber());
+        primaryKeyValue.add(conversationDetail.getContactId());
+
+        return ORM_IMPL.update(primaryKey, tableName, columnList, fieldValues, primaryKeyValue);
     }
 
     /**
-     * Create a user contact profile
+     * Removes a specific user profile
      *
-     * @param conversation object of the Conversion model
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param contactId  represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    private boolean createContact(final Conversation conversation) {
-        final String insertSql = "insert into user_contact(user_id, contact_id) values (?,?)";
-
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(insertSql)) {
-            preparedStatement.setLong(1, retrieveUserId(conversation));
-            preparedStatement.setLong(2, retrieveContactId(conversation));
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
-        }
-    }
-
-    /**
-     * Find a particular user contact record
-     *
-     * @param username name of the user
-     * @return Contact of the Model
-     */
-    public List<Object> getUserContact(final String username) {
-        final List<Object> userContact = new ArrayList<>();
-        final StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append("select contact.mobile_number, contact.person_name, contact.org_id");
-        stringBuilder.append(" from contact inner join user_contact on");
-        stringBuilder.append(" user_contact.contact_id = contact.org_id inner join user_login on");
-        stringBuilder.append(" user_login.org_id = user_contact.user_id where user_login.user_name = ? ");
-
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(String.valueOf(stringBuilder))) {
-            preparedStatement.setString(1, username);
-            final ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                final Conversation contact = new Conversation();
-
-                contact.setContactId(resultSet.getLong("org_id"));
-                contact.setMobileNumber(resultSet.getLong("mobile_number"));
-                contact.setPersonName(resultSet.getString("person_name"));
-                final Map<String, Object> getContactDetails = new HashMap<>();
-
-                getContactDetails.put("contactId", contact.getContactId());
-                getContactDetails.put("mobileNumber", contact.getMobileNumber());
-                getContactDetails.put("personName", contact.getPersonName());
-                userContact.add(getContactDetails);
-            }
-        } catch (Exception exception) {
-            throw new UserNotFoundException("User Not Found");
-        }
-        return userContact;
-    }
-
-    /**
-     * Updates an existing mobileNumber for a user.
-     *
-     * @param conversation object of the Conversion model
-     * @return Success or failure message
-     */
-    public boolean updateMobileNumber(final Conversation conversation) {
-        final String updateSql = "update contact SET mobile_number = ? where org_id = ?";
-
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(updateSql)) {
-            preparedStatement.setLong(1, conversation.getMobileNumber());
-            preparedStatement.setLong(2, conversation.getContactId());
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
-        }
-    }
-
-    /**
-     * Deletes a particular user contact record.
-     *
-     * @param contactId contactId of the messenger user.
-     * @return Success or failure message
-     */
-    public boolean deleteContact(final long contactId) {
-        final String deleteSql = "delete from contact where org_id = ?";
-        final String deleteUserContact = "delete from user_contact where contact_id = ?";
-
-        try (PreparedStatement deleteContact = CONNECTION.prepareStatement(deleteUserContact);
-             PreparedStatement preparedStatement = CONNECTION.prepareStatement(deleteSql)) {
-            deleteContact.setLong(1, contactId);
-            preparedStatement.setLong(1, contactId);
-            deleteContact.execute();
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
-        }
+    public boolean deleteContact(final String primaryKey, final String tableName, final long contactId) {
+        return ORM_IMPL.delete(primaryKey, tableName, contactId);
     }
 }

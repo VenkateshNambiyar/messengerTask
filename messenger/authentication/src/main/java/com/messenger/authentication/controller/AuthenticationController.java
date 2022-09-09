@@ -1,75 +1,84 @@
 package com.messenger.authentication.controller;
 
-import com.messenger.authentication.model.Authentication;
-import com.messenger.authentication.service.authenticationServiceImplementation.AuthenticationServiceImplementation;
-import org.json.simple.JSONObject;
+import java.util.Collection;
+import java.util.Map;
+
+import com.messenger.authentication.model.UserDetail;
+import com.messenger.authentication.service.AuthenticationServiceImpl;
 
 /**
- * provides a services for Messenger
+ * Controls the data flow into the model object and updates the view whenever data changes
  *
  * @author Venkatesh N
  * @version 1.0
  */
 public class AuthenticationController {
 
-    private static final AuthenticationServiceImplementation AUTHENTICATION_SERVICE =
-            new AuthenticationServiceImplementation();
+    private static final AuthenticationServiceImpl AUTHENTICATION_SERVICE = new AuthenticationServiceImpl();
 
     /**
-     * find a particular user record.
+     * Obtain a specific user record
      *
-     * @param username from Authentication Model.
+     * @param userId represent a UserDetail model object
+     * @return information about the specified user's userName and userId
      */
-    public JSONObject getUserDetailsByUsername(final String username) {
-        return AUTHENTICATION_SERVICE.getUserDetailsByUsername(username);
+    public Collection<Map<String, Object>> getUserDetailsByUsername(final long userId) {
+        return AUTHENTICATION_SERVICE.getUserDetailsByUserName(userId);
     }
 
     /**
-     * Display the all user records.
+     * Show every user record available
      *
-     * @return userId, username of all user in messenger
+     * @return information about the userId and userName of every user
      */
-    public JSONObject getAllDetails() {
+    public Collection<Map<String, Object>> getAllDetails() {
         return AUTHENTICATION_SERVICE.getAllDetails();
     }
 
     /**
-     * Updates an existing username for user.
+     * Insert a new user
      *
-     * @param authentication Model object
-     * @return Success or failure message
+     * @param tableName  represent database table's name
+     * @param userDetail represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean addNewUser(final Authentication authentication) {
-        return AUTHENTICATION_SERVICE.addNewUser(authentication);
+    public Boolean addNewUser(final String tableName, final Map<String, Object> userDetail) {
+        return AUTHENTICATION_SERVICE.addNewUser(tableName, userDetail);
     }
 
     /**
-     * Updates an existing password for a user.
+     * Changes a user's current password
      *
-     * @param authentication Model object.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param userDetail represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean updatePassword(final Authentication authentication) {
-        return AUTHENTICATION_SERVICE.updatePassword(authentication);
+    public Boolean updatePassword(final String primaryKey, final String tableName, final UserDetail userDetail) {
+        return AUTHENTICATION_SERVICE.updatePassword(primaryKey, tableName, userDetail);
     }
 
     /**
-     * Updates an existing username for user.
+     * Changes a user's current userName
      *
-     * @param authentication Model object.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param userDetail represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean updateUsername(final Authentication authentication) {
-        return AUTHENTICATION_SERVICE.updateUsername(authentication);
+    public Boolean updateUserName(final String primaryKey, final String tableName, final UserDetail userDetail) {
+        return AUTHENTICATION_SERVICE.updateUserName(primaryKey, tableName, userDetail);
     }
 
     /**
-     * Deletes a particular userprofile.
+     * Removes a specific user profile
      *
-     * @param userid userid of the messenger user.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param userId     represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean deleteUserProfile(final long userid) {
-        return AUTHENTICATION_SERVICE.deleteUserProfile(userid);
+    public Boolean deleteUserProfile(final String primaryKey, final String tableName, final long userId) {
+        return AUTHENTICATION_SERVICE.deleteUserProfile(primaryKey, tableName, userId);
     }
 }

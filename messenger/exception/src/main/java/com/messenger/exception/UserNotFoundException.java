@@ -1,7 +1,7 @@
 package com.messenger.exception;
 
 /**
- * uses custom exception UserNotFoundException
+ * Create an exception for userName not found and its extends CustomException
  *
  * @author Venkatesh N
  * @version 1.0

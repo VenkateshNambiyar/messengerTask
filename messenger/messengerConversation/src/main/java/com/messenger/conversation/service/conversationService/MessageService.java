@@ -1,8 +1,7 @@
 package com.messenger.conversation.service.conversationService;
 
-import com.messenger.conversation.model.Conversation;
-
-import java.util.List;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Provides the services available for message in messenger.
@@ -13,18 +12,21 @@ import java.util.List;
 public interface MessageService {
 
     /**
-     * Find a particular user message record
+     * Insert a new user message
      *
-     * @param username name of the user
-     * @return message of the user Model
+     * @param tableName  represent database table's name
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
-    List<Object> getMessage(final String username);
+    Boolean addMessage(final String tableName, final Map<String, Object> conversationDetail);
 
     /**
-     * Creates a new message record
+     * Obtain a specific user message record
      *
-     * @param conversation object of the Conversion model
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param contactId represent a ConversionDetail model object
+     * @return information about the specified user's userName and userId
      */
-    boolean addMessage(final Conversation conversation);
+    Collection<Map<String, Object>> getMessage(final String primaryKey, final String tableName, final long contactId);
 }

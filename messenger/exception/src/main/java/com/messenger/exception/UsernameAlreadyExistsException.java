@@ -1,7 +1,7 @@
 package com.messenger.exception;
 
 /**
- * uses custom exception UsernameAlreadyExistsException
+ * Create an exception for userName already exists and its extends CustomException
  *
  * @author Venkatesh N
  * @version 1.0

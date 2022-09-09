@@ -4,8 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.messenger.conversation.controller.ConversationController;
-import com.messenger.conversation.model.Conversation;
-import com.messenger.conversation.validation.Implementation.ConversationValidation;
+import com.messenger.conversation.model.ConversationDetail;
+import com.messenger.conversation.model.UserContactTable;
+import com.messenger.validation.AddContact;
+import com.messenger.validation.UserDetailValidation;
+import com.messenger.validation.getContactDetails;
+import com.messenger.validation.updateMobileNumber;
+
 import org.json.simple.JSONObject;
 
 import javax.ws.rs.PathParam;
@@ -15,6 +20,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.PUT;
+import javax.ws.rs.QueryParam;
 
 /**
  * Provide implementation for MessengerContact
@@ -26,20 +32,25 @@ import javax.ws.rs.PUT;
 public class ContactView extends ConversationController {
 
     /**
-     * Find a particular user contact record.
+     * Obtain a specific user contact record
      *
-     * @param personName name of the user.
-     * @return Contact of the Model
+     * @param contactId represent a ConversionDetail model object
+     * @return information about the specified user's userName and userId
      */
-    @Path("/userContactDetails/{personName}")
+    @Path("/userContactDetails/{contactId}")
     @Produces("application/json")
     @GET
-    public JSONObject getContact(final @PathParam("personName") String personName) {
+    public JSONObject getContact(@QueryParam("contactId")final long contactId) {
         final Map<String, Object> result = new HashMap<>();
-        final String validationResult = ConversationValidation.checkName(personName);
+        final ConversationDetail conversationDetail = new ConversationDetail();
 
-        if (validationResult.equals("Name is valid")) {
-            result.put("result", super.getUserContact(personName));
+        conversationDetail.setContactId(contactId);
+        final String validationResult = UserDetailValidation.validateUserDetail(conversationDetail,
+                getContactDetails.class);
+
+        if (validationResult.equals("valid")) {
+            result.put("result", super.getUserContact(UserContactTable.primaryKey.name, UserContactTable.tableName.name,
+                    contactId));
         } else {
             result.put("result", validationResult);
         }
@@ -47,79 +58,73 @@ public class ContactView extends ConversationController {
     }
 
     /**
-     * Creates a new contact
+     * Insert a new user contact
      *
-     * @param conversation object of the Conversion model
-     * @return Success or failure message
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
     @Path("/addContact")
     @Produces("application/json")
     @POST
-    public JSONObject addContact(final Conversation conversation) {
+    public JSONObject addContact(final ConversationDetail conversationDetail) {
+        final String validationMessage = UserDetailValidation.validateUserDetail(conversationDetail, AddContact.class);
+        final Map<String, Object> userInformation = new HashMap<>();
         final Map<String, Object> result = new HashMap<>();
-        final String mobileNumberValidation = ConversationValidation.checkMobileNumber(conversation.getMobileNumber());
-        final String personNameValidation = ConversationValidation.checkName(conversation.getPersonName());
 
-        try {
+        userInformation.put("mobile_number", conversationDetail.getMobileNumber());
+        userInformation.put("person_name", conversationDetail.getPersonName());
 
-            if (personNameValidation.equals("Name is valid") &
-                    mobileNumberValidation.equals("MobileNumber is valid")) {
-                result.put("result", super.addNewContact(conversation));
-            } else {
-                result.put("mobileNumber", mobileNumberValidation);
-                result.put("personName", personNameValidation);
-            }
-        } catch (Exception exception) {
-            result.put("result", "UserName already Exists");
+        if (validationMessage.equals("valid")) {
+            result.put("status", super.addNewContact(UserContactTable.tableName.name, userInformation));
+        } else {
+            result.put("status", validationMessage);
         }
         return new JSONObject(result);
     }
 
     /**
-     * Updates an existing mobileNumber for a user.
+     * Changes a user's current mobileNumber
      *
-     * @param conversation object of the Conversion model
-     * @return Success or failure message
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
     @Path("/changeMobileNumber")
     @Produces("application/json")
     @PUT
-    public JSONObject changeMobileNumber(final Conversation conversation) {
+    public JSONObject changeMobileNumber(final ConversationDetail conversationDetail) {
+        final String validationMessage = UserDetailValidation.validateUserDetail(conversationDetail,
+                updateMobileNumber.class);
         final Map<String, Object> result = new HashMap<>();
-        final String mobileNumberValidation = ConversationValidation.checkMobileNumber(conversation.getMobileNumber());
-        final String contactIdValidation = ConversationValidation.checkName
-                (String.valueOf(conversation.getContactId()));
 
-        try {
-
-            if (contactIdValidation.equals("Id is valid") &
-                    mobileNumberValidation.equals("MobileNumber is valid")) {
-                result.put("result", super.updateMobileNumber(conversation));
-            } else {
-                result.put("mobileNumber", mobileNumberValidation);
-                result.put("contactId", contactIdValidation);
-            }
-        } catch (Exception exception) {
-            result.put("result", "UserName already Exists");
+        if (validationMessage.equals("valid")) {
+            result.put("status", super.updateMobileNumber(UserContactTable.primaryKey.name,
+                    UserContactTable.tableName.name, conversationDetail));
+        } else {
+            result.put("status", validationMessage);
         }
         return new JSONObject(result);
     }
 
     /**
-     * Deletes a particular user contact records.
+     * Removes a specific user profile
      *
-     * @param contactId contactId of the messenger user.
-     * @return Success or failure message
+     * @param contactId  represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
     @Path("/deleteContact/{contactId}")
     @Produces("application/json")
     @DELETE
     public JSONObject deleteContact(final @PathParam("contactId") long contactId) {
         final Map<String, Object> result = new HashMap<>();
-        final String validationResult = ConversationValidation.checkId(contactId);
+        final ConversationDetail conversationDetail = new ConversationDetail();
 
-        if (validationResult.equals("Id is valid")) {
-            result.put("result", super.deleteUserContact(contactId));
+        conversationDetail.setContactId(contactId);
+        final String validationResult = UserDetailValidation.validateUserDetail(conversationDetail,
+                getContactDetails.class);
+
+        if (validationResult.equals("valid")) {
+            result.put("result", super.deleteUserContact(UserContactTable.primaryKey.name,
+                    UserContactTable.tableName.name, contactId));
         } else {
             result.put("result", validationResult);
         }

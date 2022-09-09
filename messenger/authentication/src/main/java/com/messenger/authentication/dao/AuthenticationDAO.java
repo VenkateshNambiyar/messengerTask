@@ -1,153 +1,129 @@
 package com.messenger.authentication.dao;
 
-import com.messenger.authentication.model.Authentication;
-import com.messenger.connectDatabase.ConnectDataBase;
-import com.messenger.exception.UserNotFoundException;
-import com.messenger.exception.UsernameAlreadyExistsException;
-import org.json.simple.JSONObject;
+import com.messenger.authentication.model.UserDetail;
+import com.messenger.authentication.model.UserInformationTable;
+import com.messenger.orm.ORMImpl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
- * Provide database connection to perform create, read, update, delete operation
+ * Create, read, update, and delete operations should be performed via a database connection
  *
  * @author Venkatesh N
  * @version 1.0
  */
 public class AuthenticationDAO {
-
-    private static final Connection CONNECTION = ConnectDataBase.getInstance().getConnection();
+   private final static ORMImpl ORM_IMPL = new ORMImpl();
 
     /**
-     * Find a particular user record.
+     * Obtain a specific user record
      *
-     * @param username from Authentication Model.
-     * @return username, userId of a particular user
+     * @param userId represent a UserDetail model object
+     * @return information about the specified user's userName and userId
      */
-    public JSONObject getUserDetailsByUsername(final String username) {
-        final Map<String, Object> userDetails = new HashMap<>();
-        final String selectSql = " Select org_id, user_name from user_login where user_name = ?";
+    public Collection<Map<String, Object>> getUserDetailsByUserName(final long userId) {
+        final String[] fieldName = new String[2];
 
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(selectSql)) {
-            preparedStatement.setString(1, username);
-            final ResultSet resultSet = preparedStatement.executeQuery();
+        for (final String column : UserInformationTable.columnField.field) {
 
-            while (resultSet.next()) {
-                userDetails.put("userId", resultSet.getLong("org_id"));
-                userDetails.put("username", resultSet.getString("user_name"));
+            if (column.equals("user_name")) {
+                fieldName[0] = column;
+                fieldName[1] = UserInformationTable.primaryKey.name;
             }
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
         }
-        return new JSONObject(userDetails);
+        return ORM_IMPL.getParticularUserDetails(UserInformationTable.primaryKey.name,
+                UserInformationTable.tableName.name, fieldName, userId);
     }
 
     /**
-     * Display the all user records.
+     * Show every user record available
      *
-     * @return userId, username of all user in messenger
+     * @return information about the userId and userName of every user
      */
-    public JSONObject getAllDetails() {
-        final Map<String, List<Object>> allUserDetails = new Hashtable<>();
-        final List<Object> userProfile = new ArrayList<>();
-        final String selectSql = " Select org_id, user_name from user_login ";
+    public Collection<Map<String, Object>> getAllDetails() {
+        final String[] fieldName = new String[2];
 
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(selectSql)) {
-            final ResultSet resultSet = preparedStatement.executeQuery();
+        for (final String column : UserInformationTable.columnField.field) {
 
-            while (resultSet.next()) {
-                final Authentication authentication = new Authentication();
-
-                authentication.setUserId(resultSet.getLong("org_id"));
-                authentication.setUsername(resultSet.getString("user_name"));
-                final Map<String, Object> getDetails = new HashMap<>();
-
-                getDetails.put("userid", authentication.getUserId());
-                getDetails.put("username", authentication.getUsername());
-                userProfile.add(getDetails);
-                allUserDetails.put("UserProfile", userProfile);
+            if (column.equals("user_name")) {
+                fieldName[0] = column;
+                fieldName[1] = UserInformationTable.primaryKey.name;
             }
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
         }
-        return new JSONObject(allUserDetails);
+        return ORM_IMPL.getDetails(UserInformationTable.tableName.name, fieldName);
     }
 
     /**
-     * Creates a new user.
+     * Insert a new user
      *
-     * @param authentication object of the Authentication model
-     * @return Success or failure message
+     * @param tableName  represent database table's name
+     * @param userDetail represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean addNewUser(final Authentication authentication) {
-        final String insertSql = "insert into user_login (user_name, password) values(?, ?)";
-
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(insertSql)) {
-            preparedStatement.setString(1, authentication.getUsername());
-            preparedStatement.setString(2, authentication.getPassword());
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (Exception sqlException) {
-            throw new UsernameAlreadyExistsException("username already Exists");
-        }
+    public Boolean addNewUser(final String tableName, final Map<String, Object> userDetail) {
+        return ORM_IMPL.insert(tableName, userDetail);
     }
 
     /**
-     * Updates an existing password for user.
+     * Changes a user's current password
      *
-     * @param authentication object of the Authentication Model.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param userDetail represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean updatePassword(final Authentication authentication) {
-        final String updateSql = "update user_login SET password = ? where user_name = ?";
+    public Boolean updatePassword(final String primaryKey, final String tableName, final UserDetail userDetail) {
+        final List<Object> fieldValues = new ArrayList<>();
+        final List<Object> primaryKeyValue = new ArrayList<>();
+        final String[] columnList = new String[2];
 
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(updateSql)) {
-            preparedStatement.setString(1, authentication.getPassword());
-            preparedStatement.setString(2, authentication.getUsername());
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
+        for (final String column : UserInformationTable.columnField.field) {
+            if (column.equals("user_name")) {
+                columnList[0] = column;
+            }
         }
+        fieldValues.add(userDetail.getUserName());
+        primaryKeyValue.add(userDetail.getUserId());
+
+        return ORM_IMPL.update(primaryKey, tableName, columnList, fieldValues, primaryKeyValue);
     }
 
     /**
-     * Updates an existing username for user.
+     * Changes a user's current userName
      *
-     * @param authentication object of the Authentication Model.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param userDetail represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean updateUsername(final Authentication authentication) {
-        final String updateSql = "update user_login SET user_name = ? where org_id = ?";
+    public Boolean updateUsername(final String primaryKey, final String tableName, final UserDetail userDetail) {
+        final List<Object> fieldValues = new ArrayList<>();
+        final List<Object> primaryKeyValue = new ArrayList<>();
+        final String[] columnList = new String[1];
 
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(updateSql)) {
-            preparedStatement.setString(1, authentication.getUsername());
-            preparedStatement.setLong(2, authentication.getUserId());
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
+        for (final String column : UserInformationTable.columnField.field) {
+            if (column.equals("user_name")) {
+                columnList[0] = column;
+            }
         }
+        fieldValues.add(userDetail.getUserName());
+        primaryKeyValue.add(userDetail.getUserId());
+
+        return ORM_IMPL.update(primaryKey, tableName, columnList, fieldValues, primaryKeyValue);
     }
 
     /**
-     * Deletes a particular userprofile.
+     * Removes a specific user profile
      *
-     * @param userid from the Authentication Model.
-     * @return Success or failure message
+     * @param primaryKey represent name of a table's column
+     * @param tableName  represent database table's name
+     * @param userId     represent a UserDetail model object
+     * @return message of Success or Failure
      */
-    public boolean deleteUserProfile(final long userid) {
-        final String deleteSql = "delete from user_login where org_id = ?";
-
-        try (PreparedStatement preparedStatement = CONNECTION.prepareStatement(deleteSql)) {
-            preparedStatement.setLong(1, userid);
-
-            return preparedStatement.executeUpdate() > 0;
-        } catch (Exception exception) {
-            throw new UserNotFoundException("UserNotFound");
-        }
+    public Boolean deleteUserProfile(final String primaryKey, final String tableName, final long userId) {
+        return ORM_IMPL.delete(primaryKey, tableName, userId);
     }
 }

@@ -12,8 +12,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.POST;
 
 import com.messenger.conversation.controller.ConversationController;
-import com.messenger.conversation.model.Conversation;
-import com.messenger.conversation.validation.Implementation.ConversationValidation;
+import com.messenger.conversation.model.ConversationDetail;
+import com.messenger.conversation.model.UserContactTable;
+import com.messenger.validation.GetUserDetails;
+import com.messenger.validation.UserDetailValidation;
+import com.messenger.validation.getContactDetails;
+
 import org.json.simple.JSONObject;
 
 /**
@@ -25,54 +29,55 @@ import org.json.simple.JSONObject;
 public class MessageView extends ConversationController {
 
     /**
-     * Creates a new message record.
+     * Insert a new user message
      *
-     * @param conversation object of the Conversion model
-     * @return Success or failure message
+     * @param conversationDetail represent a ConversationDetail model object
+     * @return message of Success or Failure
      */
     @Path("/sendMessage")
     @Produces("application/json")
     @POST
-    public JSONObject sendMessage(final Conversation conversation) {
+    public JSONObject sendMessage(final ConversationDetail conversationDetail) {
         final Date date = new Date();
         final long time = date.getTime();
-        final Map<String, Object> result = new HashMap<>();
-        final String profileNameValidation = ConversationValidation.checkName(conversation.getProfileName());
-        final String profileIdValidation = ConversationValidation.checkId(conversation.getProfileId());
         final Timestamp messageTimestamp = new Timestamp(time);
+        final String validationMessage = UserDetailValidation.validateUserDetail(conversationDetail,
+                GetUserDetails.class);
+        final Map<String, Object> userInformation = new HashMap<>();
+        final Map<String, Object> result = new HashMap<>();
 
-        conversation.setMessageTime(messageTimestamp);
+        conversationDetail.setMessageTime(messageTimestamp);
+        userInformation.put("message_time", conversationDetail.getMessageTime());
+        userInformation.put("message_details", conversationDetail.getMessageContent());
 
-        try {
-
-            if (profileNameValidation.equals("Name is valid") &
-                    profileIdValidation.equals("Id is valid")) {
-                result.put("result", super.addMessage(conversation));
-            } else {
-                result.put("profileName", profileNameValidation);
-                result.put("profileId", profileIdValidation);
-            }
-        } catch (Exception exception) {
-            result.put("result", "UserName already Exists");
+        if (validationMessage.equals("valid")) {
+            result.put("status", super.addMessage(UserContactTable.tableName.name, userInformation));
+        } else {
+            result.put("status", validationMessage);
         }
         return new JSONObject(result);
     }
 
     /**
-     * Find a particular user message record.
+     * Obtain a specific user message record
      *
-     * @param profileName name of the user.
-     * @return Contact of the Model
+     * @param contactId represent a ConversionDetail model object
+     * @return information about the specified user's userName and userId
      */
-    @Path("/messageHistory/{profileName}")
+    @Path("/messageHistory/{contactId}")
     @Produces("application/json")
     @GET
-    public JSONObject getMessageHistory(final @PathParam("profileName") String profileName) {
+    public JSONObject getMessageHistory(final @PathParam("contactId") long contactId) {
         final Map<String, Object> result = new HashMap<>();
-        final String validationResult = ConversationValidation.checkName(profileName);
+        final ConversationDetail conversationDetail = new ConversationDetail();
 
-        if (validationResult.equals("Name is valid")) {
-            result.put("result", super.getMessage(profileName));
+        conversationDetail.setContactId(contactId);
+        final String validationResult = UserDetailValidation.validateUserDetail(conversationDetail,
+                getContactDetails.class);
+
+        if (validationResult.equals("valid")) {
+            result.put("result", super.getMessage(UserContactTable.primaryKey.name, UserContactTable.tableName.name,
+                    contactId));
         } else {
             result.put("result", validationResult);
         }

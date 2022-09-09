@@ -1,7 +1,7 @@
 package com.messenger.exception;
 
 /**
- * uses custom exception DatabaseNotConnectedException
+ * Create an exception for DataBaseConnection and it extends CustomException
  *
  * @author Venkatesh N
  * @version 1.0
