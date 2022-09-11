@@ -8,15 +8,18 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.PUT;
 
-import com.messenger.validation.UpdateUserName;
-import com.messenger.validation.UpdateUserPassword;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
-import com.messenger.validation.userDetails;
-import com.messenger.authentication.model.UserInformationTable;
+import com.messenger.orm.TableName;
+import com.messenger.orm.UserLogin;
+import com.messenger.validation.UpdateUserName;
+import com.messenger.validation.UpdateUserPassword;
+import com.messenger.validation.UserDetails;
 import com.messenger.validation.AddNewUser;
 import com.messenger.validation.UserDetailValidation;
 import com.messenger.authentication.model.UserDetail;
@@ -29,26 +32,35 @@ import com.messenger.authentication.controller.AuthenticationController;
  * @version 1.0
  */
 @Path("/")
-public class AuthenticationView extends AuthenticationController {
+public class AuthenticationView {
+
+    private static final AuthenticationController AUTHENTICATION_CONTROLLER = new AuthenticationController();
 
     /**
      * Obtain a specific user record
      *
-     * @param userId represent a UserDetail model object
+     * @param id represent a UserDetail model object
      * @return information about the specified user's userName and userId
      */
-    @Path("/userProfile/{userId}")
+    @Path("/userProfile/{id}")
     @Produces("application/json")
     @GET
-    public JSONObject getUserProfile(@PathParam("userId") final long userId) {
+    public JSONObject getParticularDetails(@PathParam("id") final long id) {
         final Map<String, Object> result = new HashMap<>();
+        final List<String> columnList = new ArrayList<>();
+        final Map<String, Object> conditionColumnMap = new HashMap<>();
         final UserDetail userDetail = new UserDetail();
 
-        userDetail.setUserId(userId);
-        final String validationResult = UserDetailValidation.validateUserDetail(userDetail, userDetails.class);
+        userDetail.setUserId(id);
+        final String validationResult = UserDetailValidation.validateDetails(userDetail, UserDetails.class);
+
+        columnList.add(UserLogin.userId.getColumnName());
+        columnList.add(UserLogin.userName.getColumnName());
+        conditionColumnMap.put(UserLogin.userId.getColumnName(), userDetail.getUserId());
 
         if (validationResult.equals("valid")) {
-            result.put("result", super.getUserDetailsByUsername(userId));
+            result.put("result", AUTHENTICATION_CONTROLLER.getParticularDetailsById(TableName.user_login, columnList,
+                    conditionColumnMap));
         } else {
             result.put("result", validationResult);
         }
@@ -63,10 +75,13 @@ public class AuthenticationView extends AuthenticationController {
     @Path("/allUserDetails")
     @Produces("application/json")
     @GET
-    public JSONObject getUserDetails() {
+    public JSONObject getAllDetails() {
         final Map<String, Object> result = new HashMap<>();
+        final List<String> columnList = new ArrayList<>();
 
-        result.put("status", super.getAllDetails().toString());
+        columnList.add(UserLogin.userId.getColumnName());
+        columnList.add(UserLogin.userName.getColumnName());
+        result.put("status", AUTHENTICATION_CONTROLLER.getAllDetails(TableName.user_login, columnList));
         return new JSONObject(result);
     }
 
@@ -80,15 +95,15 @@ public class AuthenticationView extends AuthenticationController {
     @Produces("application/json")
     @POST
     public JSONObject addUser(final UserDetail userDetail) {
-        final String validationMessage = UserDetailValidation.validateUserDetail(userDetail, AddNewUser.class);
-        final Map<String, Object> userInformation = new HashMap<>();
+        final String validationMessage = UserDetailValidation.validateDetails(userDetail, AddNewUser.class);
+        final Map<String, Object> objectMap = new HashMap<>();
         final Map<String, Object> result = new HashMap<>();
 
-        userInformation.put("user_name", userDetail.getUserName());
-        userInformation.put("password", userDetail.getPassword());
+        objectMap.put(UserLogin.password.getColumnName(), userDetail.getPassword());
+        objectMap.put(UserLogin.userName.getColumnName(), userDetail.getUserName());
 
         if (validationMessage.equals("valid")) {
-            result.put("status", super.addNewUser(UserInformationTable.tableName.name, userInformation));
+            result.put("status", AUTHENTICATION_CONTROLLER.addNewUser(TableName.user_login, objectMap));
         } else {
             result.put("status", validationMessage);
         }
@@ -104,13 +119,18 @@ public class AuthenticationView extends AuthenticationController {
     @Path("/updatePassword")
     @Produces("application/json")
     @PUT
-    public JSONObject updateUserPassword(final UserDetail userDetail) {
-        final String validationMessage = UserDetailValidation.validateUserDetail(userDetail, UpdateUserPassword.class);
+    public JSONObject changePassword(final UserDetail userDetail) {
+        final String validationMessage = UserDetailValidation.validateDetails(userDetail, UpdateUserPassword.class);
         final Map<String, Object> result = new HashMap<>();
+        final Map<String, Object> conditionColumn = new HashMap<>();
+        final Map<String, Object> objectMap = new HashMap<>();
+
+        objectMap.put(UserLogin.password.getColumnName(), userDetail.getPassword());
+        conditionColumn.put(UserLogin.userId.getColumnName(), userDetail.getUserId());
 
         if (validationMessage.equals("valid")) {
-            result.put("status", super.updatePassword(UserInformationTable.primaryKey.name,
-                    UserInformationTable.tableName.name, userDetail));
+            result.put("status", AUTHENTICATION_CONTROLLER.updatePassword(TableName.user_login,
+                    objectMap, conditionColumn));
         } else {
             result.put("status", validationMessage);
         }
@@ -126,13 +146,18 @@ public class AuthenticationView extends AuthenticationController {
     @Path("/updateUserName")
     @Produces("application/json")
     @PUT
-    public JSONObject updateUserName(final UserDetail userDetail) {
-        final String validationMessage = UserDetailValidation.validateUserDetail(userDetail, UpdateUserName.class);
+    public JSONObject changeUserName(final UserDetail userDetail) {
+        final String validationMessage = UserDetailValidation.validateDetails(userDetail, UpdateUserName.class);
         final Map<String, Object> result = new HashMap<>();
+        final Map<String, Object> conditionColumn = new HashMap<>();
+        final Map<String, Object> objectDetails = new HashMap<>();
+
+        objectDetails.put(UserLogin.password.getColumnName(), userDetail.getPassword());
+        conditionColumn.put(UserLogin.userId.getColumnName(), userDetail.getUserId());
 
         if (validationMessage.equals("valid")) {
-            result.put("status", super.updateUserName(UserInformationTable.primaryKey.name,
-                    UserInformationTable.tableName.name, userDetail));
+            result.put("status", AUTHENTICATION_CONTROLLER.updateUserName(TableName.user_login, objectDetails,
+                    conditionColumn));
         } else {
             result.put("status", validationMessage);
         }
@@ -142,22 +167,23 @@ public class AuthenticationView extends AuthenticationController {
     /**
      * Removes a specific user profile
      *
-     * @param userId     represent a UserDetail model object
+     * @param id represent a UserDetail model object
      * @return message of Success or Failure
      */
-    @Path("/deleteUser/{userId}")
+    @Path("/deleteUser/{id}")
     @Produces("application/json")
     @DELETE
-    public JSONObject deleteUserDetailsByUserId(@PathParam("userId") final long userId) {
+    public JSONObject deleteDetails(@PathParam("id") final long id) {
         final Map<String, Object> result = new HashMap<>();
         final UserDetail userDetail = new UserDetail();
+        final Map<String, Object> objectDetails = new HashMap<>();
 
-        userDetail.setUserId(userId);
-        final String validationResult = UserDetailValidation.validateUserDetail(userDetail, userDetails.class);
+        userDetail.setUserId(id);
+        objectDetails.put(UserLogin.userId.getColumnName(), userDetail.getUserId());
+        final String validationResult = UserDetailValidation.validateDetails(userDetail, UserDetails.class);
 
         if (validationResult.equals("valid")) {
-            result.put("result", super.deleteUserProfile(UserInformationTable.primaryKey.name,
-                    UserInformationTable.tableName.name, userId));
+            result.put("result", AUTHENTICATION_CONTROLLER.deleteDetailsById(TableName.user_login, objectDetails));
         } else {
             result.put("result", validationResult);
         }

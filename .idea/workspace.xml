@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="c6e03760-2368-45a6-bfc0-06d580e5d4e0" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/UpdateMobileNumber.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/codeStyles/codeStyleConfig.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/dbnavigator.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/authentication/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/controller/AuthenticationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/controller/AuthenticationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/dao/AuthenticationDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/dao/AuthenticationDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/model/UserDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/model/UserDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/model/UserInformationTable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/service/AuthenticationService.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/service/AuthenticationService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/service/AuthenticationServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/service/AuthenticationServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/view/AuthenticationView.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/authentication/src/main/java/com/messenger/authentication/view/AuthenticationView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/databaseConnection/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/databaseConnection/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/exception/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/exception/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/controller/ConversationController.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/controller/ConversationController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/dao/ContactDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/dao/ContactDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/dao/MessageDAO.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/dao/MessageDAO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/model/ConversationDetail.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/model/ConversationDetail.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/model/UserContactTable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/model/UserMessageTable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationService/ContactService.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationService/ContactService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationService/MessageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationService/MessageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationServiceImpl/ContactServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationServiceImpl/ContactServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationServiceImpl/MessageServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/service/conversationServiceImpl/MessageServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/view/ContactView.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/view/ContactView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/view/MessageView.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerConversation/src/main/java/com/messenger/conversation/view/MessageView.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerFeature/src/main/feature/feature.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerFeature/src/main/feature/feature.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/messengerFeature/src/main/history/dependencies.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/messengerFeature/src/main/history/dependencies.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/objectRelationalMapping/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/objectRelationalMapping/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/objectRelationalMapping/src/main/java/com/messenger/orm/ORMImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/objectRelationalMapping/src/main/java/com/messenger/orm/ORMImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/validation/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/validation/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/UserDetailValidation.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/UserDetailValidation.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/getContactDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/GetContactDetails.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/updateMobileNumber.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/userDetails.java" beforeDir="false" afterPath="$PROJECT_DIR$/messenger/validation/src/main/java/com/messenger/validation/UserDetails.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2EcTnddsHPOYUpqJp1CNznsdz1R" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showModules" value="false" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "last_opened_file_path": "C:/Users/venka/Documents/MessengerTask"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="c6e03760-2368-45a6-bfc0-06d580e5d4e0" name="Changes" comment="" />
+      <created>1662894040880</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1662894040880</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>

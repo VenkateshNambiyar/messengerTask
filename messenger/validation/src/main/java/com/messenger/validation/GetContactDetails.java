@@ -1,4 +1,4 @@
 package com.messenger.validation;
 
-public interface getContactDetails {
+public interface GetContactDetails {
 }

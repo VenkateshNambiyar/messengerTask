@@ -1,8 +1,10 @@
 package com.messenger.conversation.view;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.ws.rs.PathParam;
@@ -13,10 +15,11 @@ import javax.ws.rs.POST;
 
 import com.messenger.conversation.controller.ConversationController;
 import com.messenger.conversation.model.ConversationDetail;
-import com.messenger.conversation.model.UserContactTable;
+import com.messenger.orm.Message;
+import com.messenger.orm.TableName;
+import com.messenger.validation.GetContactDetails;
 import com.messenger.validation.GetUserDetails;
 import com.messenger.validation.UserDetailValidation;
-import com.messenger.validation.getContactDetails;
 
 import org.json.simple.JSONObject;
 
@@ -27,6 +30,8 @@ import org.json.simple.JSONObject;
  * @version 1.0
  */
 public class MessageView extends ConversationController {
+
+    private final static ConversationController CONVERSATION_CONTROLLER = new ConversationController();
 
     /**
      * Insert a new user message
@@ -41,17 +46,17 @@ public class MessageView extends ConversationController {
         final Date date = new Date();
         final long time = date.getTime();
         final Timestamp messageTimestamp = new Timestamp(time);
-        final String validationMessage = UserDetailValidation.validateUserDetail(conversationDetail,
+        final String validationMessage = UserDetailValidation.validateDetails(conversationDetail,
                 GetUserDetails.class);
         final Map<String, Object> userInformation = new HashMap<>();
         final Map<String, Object> result = new HashMap<>();
 
         conversationDetail.setMessageTime(messageTimestamp);
-        userInformation.put("message_time", conversationDetail.getMessageTime());
-        userInformation.put("message_details", conversationDetail.getMessageContent());
+        userInformation.put(Message.messageTime.getColumnName(), conversationDetail.getMessageTime());
+        userInformation.put(Message.messageDetails.getColumnName(), conversationDetail.getMessageContent());
 
         if (validationMessage.equals("valid")) {
-            result.put("status", super.addMessage(UserContactTable.tableName.name, userInformation));
+            result.put("status", CONVERSATION_CONTROLLER.addMessage(TableName.message, userInformation));
         } else {
             result.put("status", validationMessage);
         }
@@ -61,23 +66,29 @@ public class MessageView extends ConversationController {
     /**
      * Obtain a specific user message record
      *
-     * @param contactId represent a ConversionDetail model object
+     * @param id represent a ConversionDetail model object
      * @return information about the specified user's userName and userId
      */
-    @Path("/messageHistory/{contactId}")
+    @Path("/messageHistory/{id}")
     @Produces("application/json")
     @GET
-    public JSONObject getMessageHistory(final @PathParam("contactId") long contactId) {
+    public JSONObject getMessageHistory(final @PathParam("id") long id) {
         final Map<String, Object> result = new HashMap<>();
+        final List<String> columnList = new ArrayList<>();
+        final Map<String, Object> conditionColumnMap = new HashMap<>();
         final ConversationDetail conversationDetail = new ConversationDetail();
 
-        conversationDetail.setContactId(contactId);
-        final String validationResult = UserDetailValidation.validateUserDetail(conversationDetail,
-                getContactDetails.class);
+        conversationDetail.setContactId(id);
+        final String validationResult = UserDetailValidation.validateDetails(conversationDetail,
+                GetContactDetails.class);
+
+        columnList.add(Message.messageTime.getColumnName());
+        columnList.add(Message.messageDetails.getColumnName());
+        conditionColumnMap.put(Message.messageId.getColumnName(), conversationDetail.getContactId());
 
         if (validationResult.equals("valid")) {
-            result.put("result", super.getMessage(UserContactTable.primaryKey.name, UserContactTable.tableName.name,
-                    contactId));
+            result.put("result", CONVERSATION_CONTROLLER.getMessage(TableName.message, columnList,
+                    conditionColumnMap));
         } else {
             result.put("result", validationResult);
         }

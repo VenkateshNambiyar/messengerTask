@@ -2,9 +2,9 @@ package com.messenger.authentication.model;
 
 import com.messenger.validation.UpdateUserName;
 import com.messenger.validation.UpdateUserPassword;
-import com.messenger.validation.userDetails;
 import com.messenger.validation.AddNewUser;
 
+import com.messenger.validation.UserDetails;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Min;
@@ -19,8 +19,8 @@ import jakarta.validation.constraints.Size;
  */
 public class UserDetail {
 
-    @Positive(groups = {userDetails.class, UpdateUserName.class, UpdateUserPassword.class})
-    @Min(value = 1, message = "Userid should have at least 1 character", groups = {userDetails.class,
+    @Positive(groups = {UserDetails.class, UpdateUserName.class, UpdateUserPassword.class})
+    @Min(value = 1, message = "Userid should have at least 1 character", groups = {UserDetails.class,
             UpdateUserName.class, UpdateUserPassword.class})
     private long userId;
 

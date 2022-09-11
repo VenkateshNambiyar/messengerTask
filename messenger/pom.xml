@@ -10,10 +10,10 @@
 
         <module>messengerFeature</module>
         <module>authentication</module>
-        <module>messengerConversation</module>
         <module>databaseConnection</module>
         <module>exception</module>
         <module>validation</module>
+        <module>messengerConversation</module>
         <module>objectRelationalMapping</module>
 
     </modules>

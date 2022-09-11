@@ -1,8 +1,8 @@
 package com.messenger.conversation.model;
 
 import com.messenger.validation.AddContact;
-import com.messenger.validation.getContactDetails;
-import com.messenger.validation.updateMobileNumber;
+import com.messenger.validation.GetContactDetails;
+import com.messenger.validation.UpdateMobileNumber;
 import jakarta.validation.constraints.*;
 
 import java.sql.Timestamp;
@@ -15,12 +15,14 @@ import java.sql.Timestamp;
  */
 public class ConversationDetail {
 
-    @Positive(message = "contactId should not be empty or null", groups = {getContactDetails.class,
-            updateMobileNumber.class})
-    @Min(value = 1, message = "contactId should have at least 1 character", groups = {getContactDetails.class, updateMobileNumber.class})
+    @Positive(message = "contactId should not be empty or null", groups = {GetContactDetails.class,
+            UpdateMobileNumber.class})
+    @Min(value = 1, message = "contactId should have at least 1 character", groups = {GetContactDetails.class,
+            UpdateMobileNumber.class})
     private long contactId;
 
-    @Positive(message = "mobileNumber must contain positive number only", groups = {AddContact.class, updateMobileNumber.class })
+    @Positive(message = "mobileNumber must contain positive number only", groups = {AddContact.class,
+            UpdateMobileNumber.class })
     private long mobileNumber;
 
     @NotEmpty(message = "Username should not be empty or null", groups = {AddContact.class})

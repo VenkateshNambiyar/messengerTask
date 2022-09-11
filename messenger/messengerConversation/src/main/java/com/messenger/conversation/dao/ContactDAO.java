@@ -1,10 +1,11 @@
 package com.messenger.conversation.dao;
 
-import com.messenger.conversation.model.ConversationDetail;
-import com.messenger.conversation.model.UserContactTable;
 import com.messenger.orm.ORMImpl;
+import com.messenger.orm.TableName;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Create, read, update, and delete operations should be performed via a database connection
@@ -17,72 +18,51 @@ public class ContactDAO {
     private static final ORMImpl ORM_IMPL = new ORMImpl();
 
     /**
-     * Insert a new user contact
+     * Specific database record can be retrieved
      *
-     * @param tableName  represent database table's name
-     * @param conversationDetail represent a ConversationDetail model object
-     * @return message of Success or Failure
+     * @param tableName           represent database table's name
+     * @param columnList          represent name of a table's column
+     * @param conditionColumnName represent Mapping the column names and object values in a table
+     * @return information about the particular details
      */
-    public boolean addContact(final String tableName, final Map<String, Object> conversationDetail) {
-        return ORM_IMPL.insert(tableName, conversationDetail);
+    public Collection<Map<String, Object>> getUserContact(final Enum<TableName> tableName,
+                                                          final List<String> columnList,
+                                                          final Map<String, Object> conditionColumnName) {
+        return ORM_IMPL.getParticularDetailsById(tableName, columnList, conditionColumnName);
     }
 
     /**
-     * Obtain a specific user contact record
+     * Insert a new record in dataBase
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param contactId represent a ConversionDetail model object
-     * @return information about the specified user's userName and userId
+     * @param tableName     represent a tableName of the database
+     * @param objectDetails represent Mapping the column names and object values in a table
+     * @return message of Success or Failure
      */
-    public Collection<Map <String,Object>> getUserContact(final String primaryKey, final String tableName,
-                                                         final long contactId) {
-        final String[] fieldName = new String[2];
-
-        for (final String column : UserContactTable.columnField.field) {
-
-            if (column.equals("mobile_number")) {
-                fieldName[0] = column;
-                fieldName[1] = primaryKey;
-            }
-        }
-        return ORM_IMPL.getParticularUserDetails(primaryKey, tableName, fieldName, contactId);
+    public Boolean addNewContact(final Enum<TableName> tableName, final Map<String, Object> objectDetails) {
+        return ORM_IMPL.insert(tableName, objectDetails);
     }
 
     /**
-     * Changes a user's current mobileNumber
+     * Update database information
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param conversationDetail represent a ConversationDetail model object
+     * @param tableName       represent database table's name
+     * @param objectDetails   represent Mapping the column names and object values in a table
+     * @param conditionColumn represent Mapping the condition column names and object values in a table
      * @return message of Success or Failure
      */
-    public boolean updateMobileNumber(final String primaryKey, final String tableName,
-                                      final ConversationDetail conversationDetail) {
-        final List<Object> fieldValues = new ArrayList<>();
-        final List<Object> primaryKeyValue = new ArrayList<>();
-        final String[] columnList = new String[2];
-
-        for (final String column : UserContactTable.columnField.field) {
-            if (column.equals("mobile_number")) {
-                columnList[0] = column;
-            }
-        }
-        fieldValues.add(conversationDetail.getMobileNumber());
-        primaryKeyValue.add(conversationDetail.getContactId());
-
-        return ORM_IMPL.update(primaryKey, tableName, columnList, fieldValues, primaryKeyValue);
+    public Boolean updateMobileNumber(final Enum<TableName> tableName, final Map<String, Object> objectDetails,
+                                      final Map<String, Object> conditionColumn) {
+        return ORM_IMPL.update(tableName, objectDetails, conditionColumn);
     }
 
     /**
-     * Removes a specific user profile
+     * Removes a specific details
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param contactId  represent a ConversationDetail model object
+     * @param tableName     represent database table's name
+     * @param objectDetails represent Mapping the column names and object values in a table
      * @return message of Success or Failure
      */
-    public boolean deleteContact(final String primaryKey, final String tableName, final long contactId) {
-        return ORM_IMPL.delete(primaryKey, tableName, contactId);
+    public Boolean deleteUserContact(final Enum<TableName> tableName, final Map<String, Object> objectDetails) {
+        return ORM_IMPL.delete(tableName, objectDetails);
     }
 }

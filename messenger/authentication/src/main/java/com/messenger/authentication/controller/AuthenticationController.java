@@ -1,10 +1,11 @@
 package com.messenger.authentication.controller;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
-import com.messenger.authentication.model.UserDetail;
 import com.messenger.authentication.service.AuthenticationServiceImpl;
+import com.messenger.orm.TableName;
 
 /**
  * Controls the data flow into the model object and updates the view whenever data changes
@@ -17,68 +18,76 @@ public class AuthenticationController {
     private static final AuthenticationServiceImpl AUTHENTICATION_SERVICE = new AuthenticationServiceImpl();
 
     /**
-     * Obtain a specific user record
+     * Specific database record can be retrieved
      *
-     * @param userId represent a UserDetail model object
-     * @return information about the specified user's userName and userId
+     * @param tableName       represent database table's name
+     * @param columnList      represent name of a table's column
+     * @param conditionColumnName represent Mapping the column names and object values in a table
+     * @return information about the particular details
      */
-    public Collection<Map<String, Object>> getUserDetailsByUsername(final long userId) {
-        return AUTHENTICATION_SERVICE.getUserDetailsByUserName(userId);
+    public Collection<Map<String, Object>> getParticularDetailsById(final Enum<TableName> tableName,
+                                                                    final List<String> columnList,
+                                                                    final Map<String, Object> conditionColumnName) {
+        return AUTHENTICATION_SERVICE.getParticularDetailsById(tableName, columnList, conditionColumnName);
     }
 
     /**
-     * Show every user record available
-     *
-     * @return information about the userId and userName of every user
-     */
-    public Collection<Map<String, Object>> getAllDetails() {
-        return AUTHENTICATION_SERVICE.getAllDetails();
-    }
-
-    /**
-     * Insert a new user
+     * Retrieving all records
      *
      * @param tableName  represent database table's name
-     * @param userDetail represent a UserDetail model object
-     * @return message of Success or Failure
+     * @param columnList represent name of a table's column
+     * @return information about the particular details
      */
-    public Boolean addNewUser(final String tableName, final Map<String, Object> userDetail) {
-        return AUTHENTICATION_SERVICE.addNewUser(tableName, userDetail);
+    public Collection<Map<String, Object>> getAllDetails(final Enum<TableName> tableName,
+                                                         final List<String> columnList) {
+        return AUTHENTICATION_SERVICE.getAllDetails(tableName, columnList);
     }
 
     /**
-     * Changes a user's current password
+     * Insert a new record in dataBase
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userDetail represent a UserDetail model object
+     * @param tableName    represent a tableName of the database
+     * @param objectDetails represent Mapping the column names and object values in a table
      * @return message of Success or Failure
      */
-    public Boolean updatePassword(final String primaryKey, final String tableName, final UserDetail userDetail) {
-        return AUTHENTICATION_SERVICE.updatePassword(primaryKey, tableName, userDetail);
+    public Boolean addNewUser(final Enum<TableName> tableName, final Map<String, Object> objectDetails) {
+        return AUTHENTICATION_SERVICE.addNewUser(tableName, objectDetails);
     }
 
     /**
-     * Changes a user's current userName
+     * Update database information
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userDetail represent a UserDetail model object
+     * @param tableName       represent database table's name
+     * @param objectDetails   represent Mapping the column names and object values in a table
+     * @param conditionColumn represent Mapping the condition column names and object values in a table
      * @return message of Success or Failure
      */
-    public Boolean updateUserName(final String primaryKey, final String tableName, final UserDetail userDetail) {
-        return AUTHENTICATION_SERVICE.updateUserName(primaryKey, tableName, userDetail);
+    public Boolean updatePassword(final Enum<TableName> tableName, final Map<String, Object> objectDetails,
+                                  final Map<String, Object> conditionColumn) {
+        return AUTHENTICATION_SERVICE.updatePassword(tableName, objectDetails, conditionColumn);
     }
 
     /**
-     * Removes a specific user profile
+     * Update database information
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userId     represent a UserDetail model object
+     * @param tableName       represent database table's name
+     * @param objectDetails   represent Mapping the column names and object values in a table
+     * @param conditionColumn represent Mapping the condition column names and object values in a table
      * @return message of Success or Failure
      */
-    public Boolean deleteUserProfile(final String primaryKey, final String tableName, final long userId) {
-        return AUTHENTICATION_SERVICE.deleteUserProfile(primaryKey, tableName, userId);
+    public Boolean updateUserName(final Enum<TableName> tableName, final Map<String, Object> objectDetails,
+                                  final Map<String, Object> conditionColumn) {
+        return AUTHENTICATION_SERVICE.updateUserName(tableName, objectDetails, conditionColumn);
+    }
+
+    /**
+     * Removes a specific details
+     *
+     * @param tableName  represent database table's name
+     * @param objectDetails represent Mapping the column names and object values in a table
+     * @return message of Success or Failure
+     */
+    public Boolean deleteDetailsById(final Enum<TableName> tableName, final Map<String, Object> objectDetails) {
+        return AUTHENTICATION_SERVICE.deleteDetailsById(tableName, objectDetails);
     }
 }

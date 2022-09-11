@@ -18,20 +18,20 @@ import java.util.StringJoiner;
 /**
  * Provides an Object relational Mapping
  */
-public class ORMImpl {
+public class ORMImpl implements ORM {
 
     /**
-     * Insert a new records
+     * Insert a new record in dataBase
      *
-     * @param tableName   represent database table's name
-     * @param userDetails represent a model object
+     * @param tableName    represent a tableName of the database
+     * @param objectValues represent Mapping the column names and object values in a table
      * @return message of Success or Failure
      */
-    public Boolean insert(final String tableName, final Map<String, Object> userDetails) {
+    public Boolean insert(final Enum<TableName> tableName, final Map<String, Object> objectValues) {
         final StringJoiner column = new StringJoiner(",");
-        final StringJoiner fieldValue = new StringJoiner("' , '");
-        final Collection<Object> valuesList = userDetails.values();
-        final Set<String> columnList = userDetails.keySet();
+        final StringJoiner conditionColumnValues = new StringJoiner("' , '");
+        final Collection<Object> valuesList = objectValues.values();
+        final Set<String> columnList = objectValues.keySet();
         final StringBuilder insertQueryBuilder = new StringBuilder();
 
         for (final String name : columnList) {
@@ -39,17 +39,10 @@ public class ORMImpl {
         }
 
         for (final Object value : valuesList) {
-            fieldValue.add(value.toString());
+            conditionColumnValues.add(value.toString());
         }
-        insertQueryBuilder.append("insert into ");
-        insertQueryBuilder.append(tableName);
-        insertQueryBuilder.append("( ");
-        insertQueryBuilder.append(column);
-        insertQueryBuilder.append(" )");
-        insertQueryBuilder.append(" values ");
-        insertQueryBuilder.append("( '");
-        insertQueryBuilder.append(fieldValue);
-        insertQueryBuilder.append(" ');");
+        insertQueryBuilder.append("insert into ").append(tableName).append("(").append(column).append(")")
+                .append(" values ").append(" (' ").append(conditionColumnValues).append("');");
 
         try (Statement statement = ConnectDataBase.getInstance().getConnection().createStatement()) {
             return statement.executeUpdate(String.valueOf(insertQueryBuilder)) > 0;
@@ -59,122 +52,110 @@ public class ORMImpl {
     }
 
     /**
-     * Obtain a specific record
+     * Specific database record can be retrieved
      *
-     * @param userId represent a model object
-     * @return information about the specified user's
+     * @param tableName       represent database table's name
+     * @param columnList      represent name of a table's column
+     * @param conditionColumn represent Mapping the column names and object values in a table
+     * @return information about the particular details
      */
-    public Collection<Map<String, Object>> getParticularUserDetails(final String primaryKey, final String tableName,
-                                               final String[] columnName, final long userId) {
+    public Collection<Map<String, Object>> getParticularDetailsById(final Enum<TableName> tableName,
+                                                                    final List<String> columnList,
+                                                                    final Map<String, Object> conditionColumn) {
+        final StringJoiner column = new StringJoiner(" , ");
+        final StringJoiner conditionColumnValues = new StringJoiner(" , ");
+        final StringBuilder selectParticularQueryBuilder = new StringBuilder();
+
+        for (final String name : columnList) {
+            column.add(name);
+        }
+
+        for (final Map.Entry<String, Object> fields : conditionColumn.entrySet()) {
+            conditionColumnValues.add(fields.getKey() + " = " + fields.getValue());
+        }
+        selectParticularQueryBuilder.append(" Select ").append(column).append(" from ").append(tableName)
+                .append(" where ").append(conditionColumnValues).append(";");
+
+        return retrieveDetails(selectParticularQueryBuilder.toString());
+    }
+
+    /**
+     * Retrieving all records
+     *
+     * @param tableName  represent database table's name
+     * @param columnList represent name of a table's column
+     * @return information about the particular details
+     */
+    public Collection<Map<String, Object>> getAllDetails(final Enum<TableName> tableName,
+                                                         final List<String> columnList) {
         final StringJoiner column = new StringJoiner(",");
-        final StringBuilder selectParticularUserQueryBuilder = new StringBuilder();
+        final StringBuilder selectQueryBuilder = new StringBuilder();
+
+        for (final String fields : columnList) {
+            column.add(fields);
+        }
+        selectQueryBuilder.append(" Select ").append(column).append(" from ").append(tableName);
+
+        return retrieveDetails(selectQueryBuilder.toString());
+    }
+
+    /**
+     * Get the list of records from the table
+     *
+     * @param selectQuery represent a select query
+     * @return list of record
+     */
+    private Collection<Map<String, Object>> retrieveDetails(final String selectQuery) {
         final Map<String, Object> userDetails = new HashMap<>();
         final List<Map<String, Object>> result = new ArrayList<>();
 
-        for (final String fields : columnName) {
-            column.add(fields);
-        }
-        selectParticularUserQueryBuilder.append(" Select ");
-        selectParticularUserQueryBuilder.append(column);
-        selectParticularUserQueryBuilder.append(" from ");
-        selectParticularUserQueryBuilder.append(tableName);
-        selectParticularUserQueryBuilder.append(" where ");
-        selectParticularUserQueryBuilder.append(primaryKey);
-        selectParticularUserQueryBuilder.append(" = ");
-        selectParticularUserQueryBuilder.append(userId);
-
         try (Statement statement = ConnectDataBase.getInstance().getConnection().createStatement()) {
-            final ResultSet resultSet = statement.executeQuery(String.valueOf(selectParticularUserQueryBuilder));
+            final ResultSet resultSet = statement.executeQuery(String.valueOf(selectQuery));
             final ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
 
             while (resultSet.next()) {
 
-                for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                    userDetails.put(resultSetMetaData.getColumnName(i), resultSet.getObject(i));
+                for (int columnId = 1; columnId <= resultSetMetaData.getColumnCount(); columnId++) {
+                    userDetails.put(resultSetMetaData.getColumnName(columnId), resultSet.getObject(columnId));
                 }
-            }
-            result.add(userDetails);
-
-            return result;
-        } catch (Exception exception) {
-            throw new UserNotFoundException("user Not Found");
-        }
-    }
-
-    /**
-     * Show every user record available
-     *
-     * @return information about the every user
-     */
-    public Collection<Map<String, Object>> getDetails(final String tableName, final String[] columnName) {
-        final StringJoiner column = new StringJoiner(",");
-        final List<Map<String, Object>> resultList = new ArrayList<>();
-        final StringBuilder selectQueryBuilder = new StringBuilder();
-
-        for (final String fields : columnName) {
-            column.add(fields);
-        }
-        selectQueryBuilder.append(" Select ");
-        selectQueryBuilder.append(column);
-        selectQueryBuilder.append(" from ");
-        selectQueryBuilder.append(tableName);
-
-        try (Statement statement = ConnectDataBase.getInstance().getConnection().createStatement()) {
-            final ResultSet resultSet = statement.executeQuery(String.valueOf(selectQueryBuilder));
-            final ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
-
-            while (resultSet.next()) {
-                final Map<String, Object> userDetails = new HashMap<>();
-
-                for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
-                    userDetails.put(resultSetMetaData.getColumnName(i), resultSet.getObject(i));
-                }
-                resultList.add(userDetails);
+                result.add(userDetails);
             }
         } catch (Exception exception) {
             throw new UserNotFoundException("user Not Found");
         }
-        return resultList;
+        return result;
     }
 
     /**
-     * Changes a user's current details
+     * Update database information
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userDetails represent a model object
+     * @param tableName       represent database table's name
+     * @param objectDetails   represent Mapping the column names and object values in a table
+     * @param conditionColumn represent Mapping the condition column names and object values in a table
      * @return message of Success or Failure
      */
-    public boolean update(final String primaryKey, final String tableName, final String[] columnName,
-                          final List<Object> userDetails, final List<Object> primaryKeyValue) {
+    public Boolean update(final Enum<TableName> tableName, final Map<String, Object> objectDetails,
+                          final Map<String, Object> conditionColumn) {
         final StringJoiner column = new StringJoiner(",");
-        final StringJoiner fieldName = new StringJoiner(",");
-        final StringJoiner fieldValue = new StringJoiner(" , ");
+        final StringJoiner columnNames = new StringJoiner(" , ");
+        final StringJoiner fieldValues = new StringJoiner(" , ");
         final StringBuilder updateQueryBuilder = new StringBuilder();
+        final Collection<Object> valuesList = objectDetails.values();
+        final Set<String> columnList = objectDetails.keySet();
 
-        for (final String field : columnName) {
-            column.add(field);
+        for (final String name : columnList) {
+            column.add(name);
         }
 
-        for (final Object primaryFieldName : primaryKeyValue) {
-            fieldName.add(primaryFieldName.toString());
+        for (final Object value : valuesList) {
+            fieldValues.add(value.toString());
         }
 
-        for (final Object value : userDetails) {
-            fieldValue.add(value.toString());
+        for (final Map.Entry<String, Object> fields : conditionColumn.entrySet()) {
+            columnNames.add(fields.getKey() + " = " + fields.getValue());
         }
-        updateQueryBuilder.append("update ");
-        updateQueryBuilder.append(tableName);
-        updateQueryBuilder.append(" set ");
-        updateQueryBuilder.append(column);
-        updateQueryBuilder.append(" = ");
-        updateQueryBuilder.append(" '");
-        updateQueryBuilder.append(fieldValue);
-        updateQueryBuilder.append("'");
-        updateQueryBuilder.append(" where ");
-        updateQueryBuilder.append(primaryKey);
-        updateQueryBuilder.append(" = ");
-        updateQueryBuilder.append(fieldName);
+        updateQueryBuilder.append("update ").append(tableName).append(" set ").append(column).append(" = ").append("'")
+                .append(fieldValues).append("'").append(" where ").append(conditionColumn);
 
         try (Statement statement = ConnectDataBase.getInstance().getConnection().createStatement()) {
             return statement.executeUpdate(String.valueOf(updateQueryBuilder)) > 0;
@@ -184,22 +165,16 @@ public class ORMImpl {
     }
 
     /**
-     * Removes a specific user details
+     * Removes a specific details
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userId     represent a model object
+     * @param tableName     represent database table's name
+     * @param objectDetails represent Mapping the column names and object values in a table
      * @return message of Success or Failure
      */
-    public Boolean delete(final String primaryKey, final String tableName, final long userId) {
+    public Boolean delete(final Enum<TableName> tableName, final Map<String, Object> objectDetails) {
         final StringBuilder deleteQueryBuilder = new StringBuilder();
 
-        deleteQueryBuilder.append("Delete from ");
-        deleteQueryBuilder.append(tableName);
-        deleteQueryBuilder.append(" where ");
-        deleteQueryBuilder.append(primaryKey);
-        deleteQueryBuilder.append(" = ");
-        deleteQueryBuilder.append(userId);
+        deleteQueryBuilder.append("Delete from ").append(tableName).append(" where ").append(objectDetails);
 
         try (Statement statement = ConnectDataBase.getInstance().getConnection().createStatement()) {
             return statement.executeUpdate(String.valueOf(deleteQueryBuilder)) > 0;

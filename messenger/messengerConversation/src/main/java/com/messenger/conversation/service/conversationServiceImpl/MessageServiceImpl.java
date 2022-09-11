@@ -2,8 +2,10 @@ package com.messenger.conversation.service.conversationServiceImpl;
 
 import com.messenger.conversation.dao.MessageDAO;
 import com.messenger.conversation.service.conversationService.MessageService;
+import com.messenger.orm.TableName;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -17,28 +19,26 @@ public class MessageServiceImpl implements MessageService {
     private static final MessageDAO MESSAGE_DAO = new MessageDAO();
 
     /**
-     * Insert a new user message
+     * Insert a new record in dataBase
      *
-     * @param tableName  represent database table's name
-     * @param conversationDetail represent a ConversationDetail model object
+     * @param tableName     represent a tableName of the database
+     * @param objectDetails represent Mapping the column names and object values in a table
      * @return message of Success or Failure
      */
-    @Override
-    public Boolean addMessage(final String tableName, final Map<String, Object> conversationDetail) {
-        return MESSAGE_DAO.addMessage(tableName, conversationDetail);
+    public Boolean addMessage(final Enum<TableName> tableName, final Map<String, Object> objectDetails) {
+        return MESSAGE_DAO.addMessage(tableName, objectDetails);
     }
 
     /**
-     * Obtain a specific user message record
+     * Specific database record can be retrieved
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param contactId represent a ConversionDetail model object
-     * @return information about the specified user's userName and userId
+     * @param tableName           represent database table's name
+     * @param columnList          represent name of a table's column
+     * @param conditionColumnName represent Mapping the column names and object values in a table
+     * @return information about the particular details
      */
-    @Override
-    public Collection<Map<String, Object>> getMessage(final String primaryKey, final String tableName,
-                                                      final long contactId) {
-        return MESSAGE_DAO.getMessage(primaryKey, tableName, contactId);
+    public Collection<Map<String, Object>> getMessage(final Enum<TableName> tableName, final List<String> columnList,
+                                                      final Map<String, Object> conditionColumnName) {
+        return MESSAGE_DAO.getMessage(tableName, columnList, conditionColumnName);
     }
 }

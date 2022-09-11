@@ -13,20 +13,20 @@ import org.hibernate.validator.HibernateValidator;
  * Validate a user information
  */
 public class UserDetailValidation {
-    public static Validator validator;
-    public static String validationMessage;
 
     /**
-     * Checks the userDetails
+     * Checks the details
      *
-     * @param userDetail represent a UserDetail model object
+     * @param objectDetail represent a model object
      * @return validated input to the Authentication view
      */
-    public static <T> String validateUserDetail(final Object userDetail, final Class<T> validation) {
+    public static <T> String validateDetails(final Object objectDetail, final Class<T> validation) {
+        String validationMessage = null;
+
         try (final ValidatorFactory validatorFactory = Validation.byProvider(HibernateValidator.class)
                 .configure().buildValidatorFactory()) {
-            validator = validatorFactory.getValidator();
-            final Set<ConstraintViolation<Object>> constraintViolations = validator.validate(userDetail, validation);
+            final Validator validator = validatorFactory.getValidator();
+            final Set<ConstraintViolation<Object>> constraintViolations = validator.validate(objectDetail, validation);
 
             if (constraintViolations.size() > 0) {
 

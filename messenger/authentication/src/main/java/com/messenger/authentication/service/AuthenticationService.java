@@ -1,9 +1,10 @@
 package com.messenger.authentication.service;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
-import com.messenger.authentication.model.UserDetail;
+import com.messenger.orm.TableName;
 
 /**
  * Provides the authentication services that Messenger has available
@@ -14,56 +15,63 @@ import com.messenger.authentication.model.UserDetail;
 public interface AuthenticationService {
 
     /**
-     * Obtain a specific user record
+     * Specific database record can be retrieved
      *
-     * @param userId represent a UserDetail model object
-     * @return information about the specified user's userName and userId
+     * @param tableName           represent database table's name
+     * @param columnList          represent name of a table's column
+     * @param conditionColumnName represent Mapping the column names and object values in a table
+     * @return information about the particular details
      */
-    Collection<Map<String, Object>> getUserDetailsByUserName(final long userId);
+    Collection<Map<String, Object>> getParticularDetailsById(final Enum<TableName> tableName,
+                                                             final List<String> columnList,
+                                                             final Map<String, Object> conditionColumnName);
 
     /**
-     * Insert a new user
+     * Retrieving all records
      *
      * @param tableName  represent database table's name
-     * @param userDetail represent a UserDetail model object
-     * @return message of Success or Failure
+     * @param columnList represent name of a table's column
+     * @return information about the particular details
      */
-    Boolean addNewUser(final String tableName, final Map<String, Object> userDetail);
+    Collection<Map<String, Object>> getAllDetails(final Enum<TableName> tableName, final List<String> columnList);
 
     /**
-     * Changes a user's current userName
+     * Insert a new record in dataBase
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userDetail represent a UserDetail model object
+     * @param tableName     represent a tableName of the database
+     * @param objectDetails represent Mapping the column names and object values in a table
      * @return message of Success or Failure
      */
-    Boolean updateUserName(final String primaryKey, final String tableName, final UserDetail userDetail);
+    Boolean addNewUser(final Enum<TableName> tableName, final Map<String, Object> objectDetails);
 
     /**
-     * Changes a user's current password
+     * Update database information
      *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userDetail represent a UserDetail model object
+     * @param tableName       represent database table's name
+     * @param objectDetails   represent Mapping the column names and object values in a table
+     * @param conditionColumn represent Mapping the condition column names and object values in a table
      * @return message of Success or Failure
      */
-    Boolean updatePassword(final String primaryKey, final String tableName, final UserDetail userDetail);
+    Boolean updateUserName(final Enum<TableName> tableName, final Map<String, Object> objectDetails,
+                           final Map<String, Object> conditionColumn);
 
     /**
-     * Show every user record available
+     * Update database information
      *
-     * @return information about the userId and userName of every user
-     */
-    Collection<Map<String, Object>> getAllDetails();
-
-    /**
-     * Removes a specific user profile
-     *
-     * @param primaryKey represent name of a table's column
-     * @param tableName  represent database table's name
-     * @param userId     represent a UserDetail model object
+     * @param tableName       represent database table's name
+     * @param objectDetails   represent Mapping the column names and object values in a table
+     * @param conditionColumn represent Mapping the condition column names and object values in a table
      * @return message of Success or Failure
      */
-    Boolean deleteUserProfile(final String primaryKey, final String tableName, final long userId);
+    Boolean updatePassword(final Enum<TableName> tableName, final Map<String, Object> objectDetails,
+                           final Map<String, Object> conditionColumn);
+
+    /**
+     * Removes a specific details
+     *
+     * @param tableName     represent database table's name
+     * @param conditionColumnName represent Mapping the column names and object values in a table
+     * @return message of Success or Failure
+     */
+    Boolean deleteDetailsById(final Enum<TableName> tableName, final Map<String, Object> conditionColumnName);
 }
